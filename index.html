@@ -6,13 +6,15 @@
 <title>境外算价</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { overflow-x: hidden; }
   body { 
     font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif; 
     background: linear-gradient(160deg, #f8f4ff 0%, #fff5f8 50%, #f0f4ff 100%);
     min-height: 100vh; 
     padding: 16px; 
+    overflow-x: hidden;
   }
-  .container { max-width: 480px; margin: 0 auto; }
+  .container { max-width: 480px; margin: 0 auto; overflow-x: hidden; }
 
   .card { 
     background: #fff; 
@@ -127,10 +129,10 @@
   input.product-name { font-size: 15px; font-weight: 500; }
 
   /* 折扣按钮 - 小尺寸 */
-  .discount-btns { display: flex; gap: 6px; }
+  .discount-btns { display: flex; gap: 6px; flex-wrap: wrap; }
   .discount-btn { 
-    flex: 0 0 52px; 
-    width: 52px;
+    flex: 0 0 auto; 
+    min-width: 44px;
     height: 38px; 
     border: 1.5px solid #E8E2F4; 
     border-radius: 10px; 
@@ -425,7 +427,7 @@
           <div class="discount-btn" onclick="setDiscount(30)" id="btn30">7折</div>
         </div>
         <div style="display: flex; gap: 4px; align-items: center; flex-shrink: 0;">
-          <input type="number" id="customDiscount" placeholder="其他折扣" min="0" max="100" step="0.1" oninput="onCustomDiscount()" style="width: 100px; height: 38px; font-size: 13px; text-align: center; background: #FAFAFA; border: 1.5px solid #E8E2F4; border-radius: 10px; color: #2D2045; font-weight: 600;">
+          <input type="number" id="customDiscount" placeholder="其他" min="0" max="100" step="0.1" oninput="onCustomDiscount()" style="width: 70px; height: 38px; font-size: 13px; text-align: center; background: #FAFAFA; border: 1.5px solid #E8E2F4; border-radius: 10px; color: #2D2045; font-weight: 600;">
           <div style="color: #B8A8D8; font-size: 12px; font-weight: 600;">折</div>
         </div>
       </div>
