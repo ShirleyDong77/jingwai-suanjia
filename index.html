@@ -286,10 +286,10 @@
     cursor: pointer;
   }
   .history-item:active { background: #F5F0FF; border-color: #E0D8F5; }
-  .history-name { font-size: 14px; color: #2D2045; font-weight: 600; }
-  .history-price { font-size: 17px; color: #6C5CE7; font-weight: 800; letter-spacing: -0.3px; }
+  .history-name { font-size: 14px; color: #2D2045; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px; }
+  .history-price { font-size: 17px; color: #6C5CE7; font-weight: 800; letter-spacing: -0.3px; white-space: nowrap; }
   .history-index { font-size: 11px; color: #C4B8E8; font-weight: 600; margin-right: 8px; min-width: 20px; }
-  .history-meta { font-size: 12px; color: #9B8FB8; }
+  .history-meta { font-size: 12px; color: #9B8FB8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px; }
   .history-meta .currency { font-size: 11px; }
 
   /* 详情弹窗 */
@@ -390,7 +390,7 @@
         </div>
         <div style="display: flex; align-items: center; padding-top: 18px;">
           <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none;">
-            <input type="checkbox" id="taxFree" onchange="onTaxFreeChange()" style="display: none;">
+            <input type="checkbox" id="taxFree" style="display: none;">
             <div id="taxFreeBox" onclick="toggleTaxFree()" style="width: 20px; height: 20px; border: 2px solid #DDD5F8; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; background: transparent; flex-shrink: 0;">
               <span id="taxFreeCheck" style="display: none; font-size: 12px; color: #fff; font-weight: 700;">✓</span>
             </div>
@@ -421,10 +421,10 @@
       <div style="display: flex; gap: 8px; align-items: center;">
         <div class="discount-btns" style="gap: 8px; flex: 1;">
           <div class="discount-btn active" onclick="setDiscount(0)" id="btn0">无折扣</div>
-          <div class="discount-btn" onclick="setDiscount(5)" id="btn5">95折</div>
           <div class="discount-btn" onclick="setDiscount(10)" id="btn10">9折</div>
           <div class="discount-btn" onclick="setDiscount(20)" id="btn20">8折</div>
           <div class="discount-btn" onclick="setDiscount(30)" id="btn30">7折</div>
+          <div class="discount-btn" onclick="setDiscount(50)" id="btn50">5折</div>
         </div>
         <div style="display: flex; gap: 4px; align-items: center; flex-shrink: 0;">
           <input type="number" id="customDiscount" placeholder="其他" min="0" max="100" step="0.1" oninput="onCustomDiscount()" style="width: 70px; height: 38px; font-size: 13px; text-align: center; background: #FAFAFA; border: 1.5px solid #E8E2F4; border-radius: 10px; color: #2D2045; font-weight: 600;">
@@ -484,6 +484,7 @@
 
 <script>
 const EXCHANGE_RATES = {
+  // EXCHANGE_RATES[homeCurrency][country] = 每100元外国货币兑换多少目标货币
   CNY: { jp: 4.67, kr: 0.535, fr: 78.0, it: 78.0, de: 78.0, uk: 91.0, th: 2.10, sg: 5.38, au: 4.71, us: 7.24 },
   HKD: { jp: 0.596, kr: 0.0683, fr: 9.95, it: 9.95, de: 9.95, uk: 11.60, th: 0.268, sg: 0.686, au: 0.601, us: 0.924 },
   TWD: { jp: 2.30, kr: 0.26, fr: 38.2, it: 38.2, de: 38.2, uk: 44.6, th: 1.03, sg: 2.64, au: 2.31, us: 3.55 },
@@ -586,7 +587,7 @@ function onCustomDiscount() {
 function setDiscount(val) {
   currentDiscount = val;
   document.getElementById('customDiscount').value = '';
-  [0, 5, 10, 20, 30].forEach(v => {
+  [0, 10, 20, 30, 50].forEach(v => {
     const el = document.getElementById('btn' + v);
     if (el) el.classList.toggle('active', v === val);
   });
@@ -621,7 +622,7 @@ function calculate() {
   document.getElementById('originalPrice').textContent = priceVal > 0 ? `${homeSymbol}${fmt(originalHome)}` : '—';
   document.getElementById('saveAmount').textContent = currentDiscount > 0 && priceVal > 0 ? `-${homeSymbol}${fmt(saveHome)}` : '—';
   document.getElementById('taxRefund').textContent = taxRate > 0 && priceVal > 0 ? `+${homeSymbol}${fmt(taxRefundHome)}` : '—';
-  document.getElementById('finalPrice').innerHTML = priceVal > 0 ? `${homeSymbol}${fmt(finalHome)}<small>${homeCurrency}</small>` : `${homeSymbol}0<small>${homeCurrency}</small>`;
+  document.getElementById('finalPrice').innerHTML = priceVal > 0 ? `${homeSymbol}${fmt(finalHome)}<small>${homeCurrency}</small>` : `—`;
 }
 
 function saveRecord() {
@@ -677,10 +678,10 @@ function renderHistory() {
           <span class="history-index">${item._idx}</span>
           <div>
             <div class="history-name">${item.productName}</div>
-            <div class="history-meta">${item.price.toLocaleString()} <span class="currency">${item.foreignCurrency}</span> → ${item.final.replace(/[^0-9.]/g,'')} <span class="currency">${item.homeCurrency}</span></div>
+            <div class="history-meta">${item.price.toLocaleString()} ${item.foreignCurrency} → ${item.final.replace(/[^0-9.]/g,'')} ${item.homeCurrency}</div>
           </div>
         </div>
-        <div class="history-price">${item.final.replace(/[^0-9.]/g,'')} <span class="currency">${item.homeCurrency}</span></div>
+        <div class="history-price">${item.final.replace(/[^0-9.]/g,'')}</div>
       </div>`;
     });
     html += `</div>`;
