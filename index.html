@@ -327,6 +327,22 @@
   .modal-label { color: #9B8FB8; }
   .modal-value { color: #2D2045; font-weight: 600; }
   .modal-value.highlight { color: #6C5CE7; font-size: 16px; }
+  .toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #6C5CE7;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
 </style>
 </head>
 <body>
@@ -484,8 +500,8 @@
 
 <script>
 const EXCHANGE_RATES = {
-  // EXCHANGE_RATES[homeCurrency][country] = 每100元外国货币兑换多少目标货币
-  CNY: { jp: 4.67, kr: 0.535, fr: 78.0, it: 78.0, de: 78.0, uk: 91.0, th: 2.10, sg: 5.38, au: 4.71, us: 7.24 },
+  // EXCHANGE_RATES[homeCurrency][country] = 1元目标货币兑换多少外国货币（从open.er-api.com实时拉取）
+  CNY: { jp: 23.11, kr: 218.44, fr: 0.125, it: 0.125, de: 0.125, uk: 0.109, th: 4.74, sg: 0.186, au: 0.210, us: 0.144 },
   HKD: { jp: 0.596, kr: 0.0683, fr: 9.95, it: 9.95, de: 9.95, uk: 11.60, th: 0.268, sg: 0.686, au: 0.601, us: 0.924 },
   TWD: { jp: 2.30, kr: 0.26, fr: 38.2, it: 38.2, de: 38.2, uk: 44.6, th: 1.03, sg: 2.64, au: 2.31, us: 3.55 },
   USD: { jp: 0.0648, kr: 0.00738, fr: 1.078, it: 1.078, de: 1.078, uk: 1.259, th: 0.0290, sg: 0.0745, au: 0.0651, us: 1.00 },
@@ -514,8 +530,8 @@ function updateRateDisplay() {
   const country = document.getElementById('country').value;
   const homeCurrency = document.getElementById('homeCurrency').value;
   const ratePer100 = EXCHANGE_RATES[homeCurrency]?.[country] || 1;
-  const ratePerUnit = (ratePer100 / 100).toFixed(4);
-  document.getElementById('rateValue').textContent = '≈ ' + ratePerUnit;
+  const cnyPerForeign = (1 / ratePer100).toFixed(4);
+  document.getElementById('rateValue').textContent = '≈ ' + cnyPerForeign;
 }
 
 function swapCurrencies() {
@@ -525,6 +541,19 @@ function swapCurrencies() {
   countrySelect.value = homeSelect.value;
   homeSelect.value = tmp;
   onCountryChange();
+  showToast('✓ 币种互换成功');
+}
+
+function showToast(msg) {
+  let toast = document.querySelector('.toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.className = 'toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1500);
 }
 
 function onTaxInput() {
@@ -601,16 +630,15 @@ function calculate() {
   const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
   
   const ratePer100 = EXCHANGE_RATES[homeCurrency]?.[country] || 1;
-  const ratePerUnit = ratePer100 / 100;
   
   const priceVal = price > 0 ? price : 0;
   const discountedPrice = priceVal * (1 - currentDiscount / 100);
   const afterTaxPrice = discountedPrice * (1 - taxRate / 100);
-  const finalHome = afterTaxPrice * ratePerUnit;
-  // 全部换算为目标币种
-  const originalHome = priceVal * ratePerUnit;
-  const saveHome = (priceVal - discountedPrice) * ratePerUnit;
-  const taxRefundHome = (discountedPrice - afterTaxPrice) * ratePerUnit;
+  // foreign → CNY: foreign ÷ (1 CNY in foreign) = foreign ÷ ratePer100
+  const finalHome = afterTaxPrice / ratePer100;
+  const originalHome = priceVal / ratePer100;
+  const saveHome = (priceVal - discountedPrice) / ratePer100;
+  const taxRefundHome = (discountedPrice - afterTaxPrice) / ratePer100;
   
   const homeSymbol = CURRENCY_SYMBOL[homeCurrency];
   const decimals = CURRENCY_DECIMALS[homeCurrency] ?? 2;
@@ -639,7 +667,6 @@ function saveRecord() {
   const homeSymbol = CURRENCY_SYMBOL[homeCurrency];
   const foreignSymbol = CURRENCY_SYMBOL[foreignCurrency] || '';
   const ratePer100 = EXCHANGE_RATES[homeCurrency]?.[countryCode] || 1;
-  const ratePerUnit = (ratePer100 / 100).toFixed(4);
   const now = new Date();
   const dateKey = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
 
@@ -705,7 +732,7 @@ function openModal(idx) {
     <div class="modal-row"><span class="modal-label">当前币种</span><span class="modal-value">${item.foreignSymbol} ${item.foreignCurrency}</span></div>
     <div class="modal-row"><span class="modal-label">目标币种</span><span class="modal-value">${item.homeSymbol} ${item.homeCurrency}</span></div>
     <div class="modal-row"><span class="modal-label">商品标价</span><span class="modal-value">${item.foreignSymbol}${item.price.toLocaleString()} ${item.foreignCurrency}</span></div>
-    <div class="modal-row"><span class="modal-label">参考汇率</span><span class="modal-value">1 ${item.foreignCurrency} = ${item.ratePerUnit} ${item.homeCurrency}</span></div>
+    <div class="modal-row"><span class="modal-label">参考汇率</span><span class="modal-value">1 ${item.homeCurrency} = ${item.ratePerUnit} ${item.foreignCurrency}</span></div>
     <div class="modal-row"><span class="modal-label">折扣</span><span class="modal-value">${discountLabel}</span></div>
     <div class="modal-row"><span class="modal-label">免税</span><span class="modal-value">${item.taxFree ? '是' : '否'}</span></div>
     <div class="modal-row"><span class="modal-label">退税率</span><span class="modal-value">${item.taxRate}%</span></div>
