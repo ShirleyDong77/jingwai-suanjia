@@ -699,6 +699,7 @@ function saveRecord() {
   const discount = currentDiscount;
   const taxFree = document.getElementById('taxFree').checked;
   const final = document.getElementById('finalPrice').textContent;
+  const finalNum = parseFloat(document.getElementById('finalPrice').textContent.replace(/[^0-9.]/g, '')) || 0;
   const homeSymbol = CURRENCY_SYMBOL[homeCurrency];
   const foreignSymbol = CURRENCY_SYMBOL[foreignCurrency] || '';
   const sourceCurrency = COUNTRY_CURRENCY[countryCode] || homeCurrency;
@@ -708,12 +709,20 @@ function saveRecord() {
   const now = new Date();
   const dateKey = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
 
-  const item = { productName, country, countryCode, price, final, taxRate, discount, taxFree, homeCurrency, homeSymbol, foreignCurrency, foreignSymbol, ratePerUnit, dateKey, savedAt: now.toISOString() };
-  let history = JSON.parse(localStorage.getItem('calcHistory6') || '[]');
-  history.unshift(item);
-  if (history.length > 50) history = history.slice(0, 50);
-  localStorage.setItem('calcHistory6', JSON.stringify(history));
-  renderHistory();
+  const item = { productName, country, countryCode, price, final, finalNum, taxRate, discount, taxFree, homeCurrency, homeSymbol, foreignCurrency, foreignSymbol, ratePerUnit, dateKey, savedAt: now.toISOString() };
+  try {
+    let history = JSON.parse(localStorage.getItem('calcHistory6') || '[]');
+    history.unshift(item);
+    if (history.length > 50) history = history.slice(0, 50);
+    localStorage.setItem('calcHistory6', JSON.stringify(history));
+    renderHistory();
+    document.getElementById('productName').value = '';
+    document.getElementById('price').value = '';
+    calculate();
+    showToast('✓ 已保存');
+  } catch(e) {
+    showToast('保存失败：' + e.message);
+  }
   document.getElementById('productName').value = '';
   document.getElementById('price').value = '';
   calculate();
