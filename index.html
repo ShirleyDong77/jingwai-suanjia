@@ -571,6 +571,7 @@ function loadFallbackRates() {
 }
 
 // 页面加载时获取实时汇率，渲染历史记录
+let history = []; // 遮蔽 window.history（浏览器 History API），防止冲突
 fetchExchangeRates();
 renderHistory();
 
