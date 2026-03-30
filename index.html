@@ -618,9 +618,7 @@ function updateRateDisplay() {
 function swapCurrencies() {
   const countrySelect = document.getElementById('country');
   const homeSelect = document.getElementById('homeCurrency');
-  // 货币代码 → 国家代码（互相对应）
   const currencyToCountry = { CNY: 'cn', USD: 'us', KRW: 'kr', JPY: 'jp', EUR: 'fr', GBP: 'uk', CAD: 'ca' };
-  // 国家代码 → 货币代码
   const countryToCurrency = { jp: 'JPY', kr: 'KRW', fr: 'EUR', it: 'EUR', de: 'EUR', uk: 'GBP', th: 'THB', sg: 'SGD', au: 'AUD', us: 'USD', ca: 'CAD', cn: 'CNY' };
 
   const homeCountry = currencyToCountry[homeSelect.value];
@@ -629,13 +627,24 @@ function swapCurrencies() {
     return;
   }
 
-  // 互换前保存原来源国
   const oldCountry = countrySelect.value;
-  // 互换：来源国 ← 目标货币的国家代码，目标币种 ← 原来源国的货币代码
   countrySelect.value = homeCountry;
   homeSelect.value = countryToCurrency[oldCountry] || oldCountry;
 
-  onCountryChange();
+  // 不调onCountryChange()，因为它会根据新国家重置homeSelect，覆盖刚互换的值
+  // 只同步免税UI + 更新汇率 + 重算
+  const taxFree = document.getElementById('taxFree').checked;
+  const taxInput = document.getElementById('taxRate');
+  syncTaxFreeUI(taxFree);
+  if (taxFree) {
+    taxInput.value = 0;
+    taxInput.disabled = true;
+  } else {
+    taxInput.disabled = false;
+  }
+  updateRateDisplay();
+  calculate();
+  updateSaveButton();
   showToast('✓ 币种互换成功');
 }
 
