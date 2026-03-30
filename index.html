@@ -561,8 +561,15 @@ function updateRateDisplay() {
 function swapCurrencies() {
   const countrySelect = document.getElementById('country');
   const homeSelect = document.getElementById('homeCurrency');
+  const validCountryCodes = ['jp','kr','fr','it','de','uk','th','sg','au','us','ca','cn'];
+  const homeVal = homeSelect.value;
+  // 如果目标币种不是有效国家代码，禁止互换
+  if (!validCountryCodes.includes(homeVal)) {
+    showToast('当前目标币种暂不支持互换');
+    return;
+  }
   const tmp = countrySelect.value;
-  countrySelect.value = homeSelect.value;
+  countrySelect.value = homeVal;
   homeSelect.value = tmp;
   onCountryChange();
   showToast('✓ 币种互换成功');
