@@ -239,6 +239,7 @@
     display: flex; align-items: center; justify-content: center;
   }
   .save-btn:active { transform: scale(0.98); box-shadow: 0 2px 8px rgba(108, 92, 231, 0.2); }
+  .save-btn:disabled { background: #D0C4E8; color: #F0EEF8; cursor: not-allowed; box-shadow: none; transform: none; }
 
   .api-status { font-size: 11px; color: #C4B8E0; text-align: center; margin-top: 8px; }
 
@@ -479,7 +480,7 @@
       <div class="result-note" id="resultNote">以上金额均已换算为<span id="noteCurrency">CNY</span></div>
     </div>
 
-    <button class="save-btn" onclick="saveRecord()">保存</button>
+    <button class="save-btn" id="saveBtn" onclick="saveRecord()">保存</button>
     <p class="api-status" id="apiStatus">💱 参考汇率，实际以当天汇率</p>
   </div>
 
@@ -543,6 +544,7 @@ function onCountryChange() {
   }
   updateRateDisplay();
   calculate();
+  updateSaveButton();
 }
 
 function updateRateDisplay() {
@@ -662,6 +664,10 @@ function setDiscount(val) {
   calculate();
 }
 
+function updateSaveButton() {
+  const price = parseFloat(document.getElementById('price').value) || 0;
+  document.getElementById('saveBtn').disabled = (price <= 0);
+}
 function calculate() {
   const price = parseFloat(document.getElementById('price').value) || 0;
   const homeCurrency = document.getElementById('homeCurrency').value;
@@ -693,6 +699,7 @@ function calculate() {
   document.getElementById('saveAmount').textContent = currentDiscount > 0 && priceVal > 0 ? `-${homeSymbol}${fmt(saveHome)}` : '—';
   document.getElementById('taxRefund').textContent = taxRate > 0 && priceVal > 0 ? `+${homeSymbol}${fmt(taxRefundHome)}` : '—';
   document.getElementById('finalPrice').innerHTML = priceVal > 0 ? `${homeSymbol}${fmt(finalHome)}` : `—`;
+  updateSaveButton();
 }
 
 function saveRecord() {
