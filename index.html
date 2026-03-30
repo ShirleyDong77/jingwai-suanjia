@@ -617,17 +617,19 @@ function updateRateDisplay() {
 function swapCurrencies() {
   const countrySelect = document.getElementById('country');
   const homeSelect = document.getElementById('homeCurrency');
-  const validCountryCodes = ['jp','kr','fr','it','de','uk','th','sg','au','us','ca','cn'];
-  const homeVal = homeSelect.value;
   const countryVal = countrySelect.value;
-  // 互换后双方都必须是有效国家代码，否则下拉会变空
-  if (!validCountryCodes.includes(homeVal) || !validCountryCodes.includes(countryVal)) {
+  const homeVal = homeSelect.value;
+
+  // 只有双方都是国家代码才能互换（因为country下拉只认国家代码如"cn"，不认货币代码如"CNY"）
+  const allCountryCodes = ['jp','kr','fr','it','de','uk','th','sg','au','us','ca','cn'];
+  if (!allCountryCodes.includes(countryVal) || !allCountryCodes.includes(homeVal)) {
     showToast('互换需双方都是国家币种，暂不支持');
     return;
   }
-  const tmp = countrySelect.value;
+
+  // 正常互换：两个都是有效国家代码
   countrySelect.value = homeVal;
-  homeSelect.value = tmp;
+  homeSelect.value = countryVal;
   onCountryChange();
   showToast('✓ 币种互换成功');
 }
