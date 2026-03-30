@@ -685,7 +685,7 @@ function calculate() {
   document.getElementById('originalPrice').textContent = priceVal > 0 ? `${homeSymbol}${fmt(originalHome)}` : '—';
   document.getElementById('saveAmount').textContent = currentDiscount > 0 && priceVal > 0 ? `-${homeSymbol}${fmt(saveHome)}` : '—';
   document.getElementById('taxRefund').textContent = taxRate > 0 && priceVal > 0 ? `+${homeSymbol}${fmt(taxRefundHome)}` : '—';
-  document.getElementById('finalPrice').innerHTML = priceVal > 0 ? `${homeSymbol}${fmt(finalHome)}<small> ${CURRENCY_FLAG[homeCurrency] || ''} ${homeCurrency}</small>` : `—`;
+  document.getElementById('finalPrice').innerHTML = priceVal > 0 ? `${homeSymbol}${fmt(finalHome)}` : `—`;
 }
 
 function saveRecord() {
@@ -743,7 +743,7 @@ function renderHistory() {
           <span class="history-index">${item._idx}</span>
           <div>
             <div class="history-name">${item.productName}</div>
-            <div class="history-meta">${item.price.toLocaleString()} ${CURRENCY_FLAG[item.foreignCurrency]||''}${item.foreignCurrency} → ${item.final.replace(/[^0-9.]/g,'')} ${CURRENCY_FLAG[item.homeCurrency]||''}${item.homeCurrency}</div>
+            <div class="history-meta">${item.price.toLocaleString()} ${item.foreignSymbol || item.foreignCurrency} → ${item.final.replace(/[^0-9.]/g,'')} ${item.homeSymbol || item.homeCurrency}</div>
           </div>
         </div>
         <div class="history-price">${item.final.replace(/[^0-9.]/g,'')}</div>
@@ -767,8 +767,8 @@ function openModal(idx) {
   document.getElementById('modalContent').innerHTML = `
     <div class="modal-row"><span class="modal-label">保存时间</span><span class="modal-value">${dateStr} ${timeStr}</span></div>
     <div class="modal-row"><span class="modal-label">目的国家</span><span class="modal-value">${item.country}</span></div>
-    <div class="modal-row"><span class="modal-label">当前币种</span><span class="modal-value">${(CURRENCY_FLAG[item.foreignCurrency]||'')} ${item.foreignSymbol} ${item.foreignCurrency}</span></div>
-    <div class="modal-row"><span class="modal-label">目标币种</span><span class="modal-value">${(CURRENCY_FLAG[item.homeCurrency]||'')} ${item.homeSymbol} ${item.homeCurrency}</span></div>
+    <div class="modal-row"><span class="modal-label">当前币种</span><span class="modal-value">${item.foreignSymbol} ${item.foreignCurrency}</span></div>
+    <div class="modal-row"><span class="modal-label">目标币种</span><span class="modal-value">${item.homeSymbol} ${item.homeCurrency}</span></div>
     <div class="modal-row"><span class="modal-label">商品标价</span><span class="modal-value">${item.foreignSymbol}${item.price.toLocaleString()} ${item.foreignCurrency}</span></div>
     <div class="modal-row"><span class="modal-label">参考汇率</span><span class="modal-value">1 ${item.homeCurrency} = ${item.ratePerUnit} ${item.foreignCurrency}</span></div>
     <div class="modal-row"><span class="modal-label">折扣</span><span class="modal-value">${discountLabel}</span></div>
