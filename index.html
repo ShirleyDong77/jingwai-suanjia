@@ -618,19 +618,25 @@ function updateRateDisplay() {
 function swapCurrencies() {
   const countrySelect = document.getElementById('country');
   const homeSelect = document.getElementById('homeCurrency');
+  const currencyToCountry = { CNY: 'cn', HKD: 'hk', USD: 'us', KRW: 'kr', JPY: 'jp', EUR: 'fr', GBP: 'uk', CAD: 'ca' };
+
   const countryVal = countrySelect.value;
   const homeVal = homeSelect.value;
 
-  // 只有双方都是国家代码才能互换（因为country下拉只认国家代码如"cn"，不认货币代码如"CNY"）
-  const allCountryCodes = ['jp','kr','fr','it','de','uk','th','sg','au','us','ca','cn'];
-  if (!allCountryCodes.includes(countryVal) || !allCountryCodes.includes(homeVal)) {
-    showToast('互换需双方都是国家币种，暂不支持');
+  // 货币代码 → 国家代码（用于互换后设置国家下拉）
+  const homeCountry = currencyToCountry[homeVal];
+
+  // 只有目标货币是可识别的货币才能互换（映射到国家代码）
+  if (!homeCountry) {
+    showToast('当前目标币种暂不支持互换');
     return;
   }
 
-  // 正常互换：两个都是有效国家代码
-  countrySelect.value = homeVal;
-  homeSelect.value = countryVal;
+  // 互换：来源国 ← 目标货币的国家代码，目标货币 ← 来源国的货币
+  countrySelect.value = homeCountry;
+  const countryToCurrency = { jp: 'JPY', kr: 'KRW', fr: 'EUR', it: 'EUR', de: 'EUR', uk: 'GBP', th: 'THB', sg: 'SGD', au: 'AUD', us: 'USD', ca: 'CAD', cn: 'CNY' };
+  homeSelect.value = countryToCurrency[countryVal] || countryVal;
+
   onCountryChange();
   showToast('✓ 币种互换成功');
 }
