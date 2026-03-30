@@ -783,7 +783,7 @@ function saveRecord() {
   const discount = currentDiscount;
   const taxFree = document.getElementById('taxFree').checked;
   const final = document.getElementById('finalPrice').textContent;
-  const finalNum = parseFloat(document.getElementById('finalPrice').textContent.replace(/[^0-9.]/g, '')) || 0;
+  const finalNum = parseFloat(document.getElementById('finalPrice').textContent.replace(/[^0-9.]/g, ''))) || 0;
   const homeSymbol = CURRENCY_SYMBOL[homeCurrency];
   const foreignSymbol = CURRENCY_SYMBOL[foreignCurrency] || '';
   const sourceCurrency = COUNTRY_CURRENCY[countryCode] || homeCurrency;
