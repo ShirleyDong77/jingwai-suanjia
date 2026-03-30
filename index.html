@@ -782,7 +782,11 @@ function saveRecord() {
     showToast('请输入商品标价');
     return;
   }
-  if (price <= 0) {
+  if (price < 0) {
+    showToast('价格不能为负数');
+    return;
+  }
+  if (price === 0) {
     showToast('价格必须大于0');
     return;
   }
