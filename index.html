@@ -533,6 +533,7 @@ function onCountryChange() {
   const country = document.getElementById('country').value;
   const taxFree = document.getElementById('taxFree').checked;
   const taxInput = document.getElementById('taxRate');
+  syncTaxFreeUI(taxFree);
   if (taxFree) {
     taxInput.value = 0;
     taxInput.disabled = true;
@@ -598,13 +599,17 @@ function onTaxInput() {
 
 function toggleTaxFree() {
   const taxFreeEl = document.getElementById('taxFree');
-  const newChecked = !taxFreeEl.checked;
-  taxFreeEl.checked = newChecked;
-  // 同步更新视觉checkbox
+  // 点击label时浏览器已自动切换checkbox，这里直接读取实际状态并同步UI
+  const checked = taxFreeEl.checked;
+  syncTaxFreeUI(checked);
+  onTaxFreeChange(checked);
+}
+
+function syncTaxFreeUI(checked) {
   const box = document.getElementById('taxFreeBox');
   const check = document.getElementById('taxFreeCheck');
   const label = document.getElementById('taxFreeLabel');
-  if (newChecked) {
+  if (checked) {
     box.style.background = '#9B8FFB';
     box.style.borderColor = '#9B8FFB';
     check.style.display = 'block';
@@ -615,8 +620,6 @@ function toggleTaxFree() {
     check.style.display = 'none';
     label.style.color = '#8B7FB0';
   }
-  // 无论勾选还是取消，都触发计算
-  onTaxFreeChange(newChecked);
 }
 
 function onTaxFreeChange(checked) {
@@ -626,19 +629,11 @@ function onTaxFreeChange(checked) {
     // 勾选了免税
     taxInput.value = 0;
     taxInput.disabled = true;
-    document.getElementById('taxFreeBox').style.background = '#9B8FFB';
-    document.getElementById('taxFreeBox').style.borderColor = '#9B8FFB';
-    document.getElementById('taxFreeCheck').style.display = 'block';
-    document.getElementById('taxFreeLabel').style.color = '#6C5CE7';
   } else {
     // 取消免税
     taxInput.disabled = false;
     const country = document.getElementById('country').value;
     taxInput.value = DEFAULT_TAX[country] || 10;
-    document.getElementById('taxFreeBox').style.background = 'transparent';
-    document.getElementById('taxFreeBox').style.borderColor = '#DDD5F8';
-    document.getElementById('taxFreeCheck').style.display = 'none';
-    document.getElementById('taxFreeLabel').style.color = '#8B7FB0';
   }
   calculate();
 }
