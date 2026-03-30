@@ -433,7 +433,7 @@
     <div class="form-group">
       <label class="field-label">商品标价</label>
       <div style="display: flex; align-items: center; gap: 6px;">
-        <input type="number" id="price" placeholder="输入商品标价" oninput="calculate()" style="flex: 1;">
+        <input type="number" id="price" placeholder="输入商品标价" min="0" oninput="onPriceInput(this)" style="flex: 1;">
         <span id="priceCurrencyTag" style="font-size: 13px; color: #9B8FB8; font-weight: 600; background: #F5F0FF; padding: 4px 10px; border-radius: 8px; border: 1px solid #E8E2F4;">JPY</span>
       </div>
     </div>
@@ -718,6 +718,14 @@ function setDiscount(val) {
   calculate();
 }
 
+function onPriceInput(el) {
+  // 阻止负号输入
+  if (el.value.startsWith('-')) {
+    el.value = el.value.replace('-', '');
+    showToast('价格不能为负数');
+  }
+  calculate();
+}
 function updateSaveButton() {
   const price = parseFloat(document.getElementById('price').value) || 0;
   document.getElementById('saveBtn').disabled = (price <= 0);
