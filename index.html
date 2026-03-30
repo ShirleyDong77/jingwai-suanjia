@@ -619,9 +619,10 @@ function swapCurrencies() {
   const homeSelect = document.getElementById('homeCurrency');
   const validCountryCodes = ['jp','kr','fr','it','de','uk','th','sg','au','us','ca','cn'];
   const homeVal = homeSelect.value;
-  // 如果目标币种不是有效国家代码，禁止互换
-  if (!validCountryCodes.includes(homeVal)) {
-    showToast('当前目标币种暂不支持互换');
+  const countryVal = countrySelect.value;
+  // 互换后双方都必须是有效国家代码，否则下拉会变空
+  if (!validCountryCodes.includes(homeVal) || !validCountryCodes.includes(countryVal)) {
+    showToast('互换需双方都是国家币种，暂不支持');
     return;
   }
   const tmp = countrySelect.value;
