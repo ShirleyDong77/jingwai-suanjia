@@ -710,8 +710,11 @@ function saveRecord() {
   const dateKey = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
 
   const item = { productName, country, countryCode, price, final, finalNum, taxRate, discount, taxFree, homeCurrency, homeSymbol, foreignCurrency, foreignSymbol, ratePerUnit, dateKey, savedAt: now.toISOString() };
+  if (price <= 0) {
+    showToast('请输入商品标价');
+    return;
+  }
   try {
-    let history = JSON.parse(localStorage.getItem('calcHistory6') || '[]');
     history.unshift(item);
     if (history.length > 50) history = history.slice(0, 50);
     localStorage.setItem('calcHistory6', JSON.stringify(history));
