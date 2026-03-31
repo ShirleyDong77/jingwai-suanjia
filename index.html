@@ -411,13 +411,13 @@
             <span style="background: #F5F0FF; border: 1.5px solid #E8E2F4; border-left: none; height: 44px; padding: 0 12px; display: flex; align-items: center; border-radius: 0 10px 10px 0; font-size: 13px; color: #9B8FB8; font-weight: 600;">%</span>
           </div>
         </div>
-        <div style="display: flex; align-items: center; padding-top: 18px;">
-          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none;">
-            <input type="checkbox" id="taxFree" style="display: none;">
-            <div id="taxFreeBox" onclick="toggleTaxFree()" style="width: 20px; height: 20px; border: 2px solid #DDD5F8; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; background: transparent; flex-shrink: 0;">
-              <span id="taxFreeCheck" style="display: none; font-size: 12px; color: #fff; font-weight: 700;">✓</span>
+        <div style="display: flex; align-items: flex-start; padding-top: 18px; flex-shrink: 0;">
+          <label id="taxFreeToggle" style="display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; padding: 6px 10px; border-radius: 10px; transition: background 0.15s;">
+            <input type="checkbox" id="taxFree" style="display: none;" onchange="syncTaxFreeUI(this.checked); onTaxFreeChange(this.checked);">
+            <div id="taxFreeBox" style="width: 24px; height: 24px; border: 2px solid #DDD5F8; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: background 0.15s, border-color 0.15s; background: transparent; flex-shrink: 0;">
+              <span id="taxFreeCheck" style="display: none; font-size: 13px; color: #fff; font-weight: 700; line-height: 1;">✓</span>
             </div>
-            <span id="taxFreeLabel" style="font-size: 13px; font-weight: 600; color: #8B7FB0;">免税</span>
+            <span id="taxFreeLabel" style="font-size: 14px; font-weight: 600; color: #8B7FB0; white-space: nowrap;">免税</span>
           </label>
         </div>
       </div>
@@ -672,14 +672,6 @@ function onTaxInput() {
   document.getElementById('taxFree').checked = false;
   syncTaxFreeUI(false);
   calculate();
-}
-
-function toggleTaxFree() {
-  const taxFreeEl = document.getElementById('taxFree');
-  // 点击label时浏览器已自动切换checkbox，这里直接读取实际状态并同步UI
-  const checked = taxFreeEl.checked;
-  syncTaxFreeUI(checked);
-  onTaxFreeChange(checked);
 }
 
 function syncTaxFreeUI(checked) {
