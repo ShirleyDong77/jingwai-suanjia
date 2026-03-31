@@ -445,7 +445,6 @@
         <div class="discount-btns" style="gap: 8px; flex: 1;">
           <div class="discount-btn active" onclick="setDiscount(0)" id="btn0">无折扣</div>
           <div class="discount-btn" onclick="setDiscount(10)" id="btn10">9折</div>
-          <div class="discount-btn" onclick="setDiscount(20)" id="btn20">8折</div>
           <div class="discount-btn" onclick="setDiscount(30)" id="btn30">7折</div>
           <div class="discount-btn" onclick="setDiscount(50)" id="btn50">5折</div>
         </div>
@@ -799,7 +798,7 @@ function saveRecord() {
   const sourceCurrency = COUNTRY_CURRENCY[countryCode] || homeCurrency;
   const sameCurrency = (sourceCurrency === homeCurrency);
   const ratePer100 = sameCurrency ? 1 : (EXCHANGE_RATES[homeCurrency]?.[countryCode] || 1);
-  const ratePerUnit = sameCurrency ? 1 : (1 / ratePer100);
+  const ratePerUnit = sameCurrency ? 1 : parseFloat((1 / ratePer100).toFixed(3));
   const now = new Date();
   const dateKey = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
 
