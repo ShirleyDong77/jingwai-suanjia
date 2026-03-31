@@ -848,7 +848,7 @@ function renderHistory() {
           <span class="history-index">${item._idx}</span>
           <div>
             <div class="history-name">${item.productName}</div>
-            <div class="history-meta">${item.price.toLocaleString()} ${item.foreignSymbol || item.foreignCurrency} → ${item.final.replace(/[^0-9.]/g,'')} ${item.homeSymbol || item.homeCurrency}</div>
+            <div class="history-meta">${item.price.toLocaleString()} ${item.foreignCurrency} → ${item.final.replace(/[^0-9.]/g,'')} ${item.homeCurrency}</div>
           </div>
         </div>
         <div class="history-price">${item.final.replace(/[^0-9.]/g,'')}</div>
@@ -875,7 +875,7 @@ function openModal(idx) {
     <div class="modal-row"><span class="modal-label">当前币种</span><span class="modal-value">${item.foreignSymbol} ${item.foreignCurrency}</span></div>
     <div class="modal-row"><span class="modal-label">目标币种</span><span class="modal-value">${item.homeSymbol} ${item.homeCurrency}</span></div>
     <div class="modal-row"><span class="modal-label">商品标价</span><span class="modal-value">${item.foreignSymbol}${item.price.toLocaleString()} ${item.foreignCurrency}</span></div>
-    <div class="modal-row"><span class="modal-label">参考汇率</span><span class="modal-value">1 ${item.homeCurrency} = ${item.ratePerUnit} ${item.foreignCurrency}</span></div>
+    <div class="modal-row"><span class="modal-label">参考汇率</span><span class="modal-value">1 ${item.foreignCurrency} ≈ ${item.ratePerUnit} ${item.homeCurrency}</span></div>
     <div class="modal-row"><span class="modal-label">折扣</span><span class="modal-value">${discountLabel}</span></div>
     <div class="modal-row"><span class="modal-label">免税</span><span class="modal-value">${item.taxFree ? '是' : '否'}</span></div>
     <div class="modal-row"><span class="modal-label">退税率</span><span class="modal-value">${item.taxRate}%</span></div>
