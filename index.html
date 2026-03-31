@@ -713,14 +713,14 @@ function onCustomDiscount() {
   if (val > 100) { val = 100; input.value = 100; }
   if (val < 0) { val = 0; input.value = 0; }
   document.querySelectorAll('.discount-btn').forEach(btn => btn.classList.remove('active'));
-  currentDiscount = 100 - val;
+  currentDiscount = val;
   calculate();
 }
 
 function setDiscount(val) {
   currentDiscount = val;
   document.getElementById('customDiscount').value = '';
-  [0, 10, 20, 30, 50].forEach(v => {
+  [0, 10, 30, 50].forEach(v => {
     const el = document.getElementById('btn' + v);
     if (el) el.classList.toggle('active', v === val);
   });
