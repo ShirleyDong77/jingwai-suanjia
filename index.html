@@ -379,7 +379,7 @@
       <!-- 参考汇率 -->
       <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
         <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
-          <div style="font-size: 15px; color: #A09CB8; font-weight: 600; text-align: center; letter-spacing: 0.3px;" id="rateValue">≈ 0.0467</div>
+          <div style="font-size: 13px; color: #A09CB8; font-weight: 600; text-align: center; letter-spacing: 0.3px;" id="rateValue">加载中…</div>
           <div onclick="swapCurrencies()" style="width: 34px; height: 34px; background: #F0EEF6; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
             <span style="font-size: 17px; color: #8B7FB0; font-weight: 600;">⇄</span>
           </div>
@@ -610,8 +610,8 @@ function updateRateDisplay() {
     document.getElementById('rateValue').textContent = '—';
   } else {
     const ratePer100 = EXCHANGE_RATES[homeCurrency]?.[country] || 1;
-    const cnyPerForeign = (1 / ratePer100).toFixed(4);
-    document.getElementById('rateValue').textContent = '≈ ' + cnyPerForeign;
+    const ratePerUnit = (1 / ratePer100).toFixed(3);
+    document.getElementById('rateValue').textContent = '1 ' + sourceCurrency + ' ≈ ' + ratePerUnit + ' ' + homeCurrency;
   }
 }
 
