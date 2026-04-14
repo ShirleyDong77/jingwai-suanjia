@@ -3,383 +3,764 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>城市ID查询</title>
+<title>境外算价</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+  html { overflow-x: hidden; }
+  body { 
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif; 
     background: linear-gradient(160deg, #f8f4ff 0%, #fff5f8 50%, #f0f4ff 100%);
-    min-height: 100vh;
-    padding: 20px 16px 40px;
+    min-height: 100vh; 
+    padding: 16px; 
+    overflow-x: hidden;
   }
-  .container { max-width: 480px; margin: 0 auto; }
+  .container { max-width: 480px; margin: 0 auto; overflow-x: hidden; }
 
-  /* 头部 */
-  .header {
-    text-align: center;
-    margin-bottom: 24px;
+  .card { 
+    background: #fff; 
+    border-radius: 28px; 
+    padding: 24px 20px; 
+    margin-bottom: 16px; 
+    box-shadow: 0 4px 24px rgba(108, 92, 231, 0.10), 0 1px 3px rgba(108, 92, 231, 0.06); 
+    border: 1px solid rgba(155, 143, 251, 0.12); 
   }
-  .header h1 {
-    font-size: 26px;
-    font-weight: 800;
-    background: linear-gradient(135deg, #7B6AFF, #A29BFE);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+
+  .header { text-align: center; margin-bottom: 18px; }
+  .header h1 { 
+    font-size: 24px; 
+    font-weight: 800; 
     letter-spacing: -0.5px;
-    margin-bottom: 6px;
+    color: #6C5CE7;
+    margin-bottom: 5px;
   }
-  .header .subtitle {
-    font-size: 13px;
-    color: #9B8FB8;
+  .header .slogan { 
+    font-size: 12px; 
+    color: #9B8FB8; 
     font-weight: 500;
+    letter-spacing: 0.3px;
+    margin-bottom: 14px;
+  }
+  .header-divider { 
+    height: 1px; 
+    background: linear-gradient(90deg, transparent, #E0DCF2 20%, #E0DCF2 80%, transparent); 
+    margin: 0 -4px;
   }
 
-  /* 搜索框 */
-  .search-card {
-    background: rgba(255,255,255,0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-radius: 28px;
-    padding: 20px 20px;
-    box-shadow: 0 4px 24px rgba(108,92,231,0.10), 0 1px 3px rgba(108,92,231,0.06);
-    border: 1px solid rgba(155,143,251,0.15);
-    margin-bottom: 20px;
+  label.field-label { 
+    display: block; 
+    font-size: 11px; 
+    color: #9B8FB8; 
+    margin-bottom: 5px; 
+    font-weight: 600; 
+    letter-spacing: 0.5px; 
+    text-transform: uppercase;
   }
-  .search-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #FAFAFA;
-    border: 1.5px solid #E8E2F4;
-    border-radius: 16px;
-    padding: 0 16px;
-    transition: all 0.2s;
-  }
-  .search-wrapper:focus-within {
-    border-color: #9B8FFB;
-    background: #fff;
-    box-shadow: 0 0 0 4px rgba(155,143,251,0.12);
-  }
-  .search-icon {
-    font-size: 18px;
-    flex-shrink: 0;
-    opacity: 0.6;
-  }
-  .search-input {
-    flex: 1;
-    height: 52px;
-    border: none;
-    background: transparent;
-    font-size: 16px;
+
+  input, select { 
+    width: 100%; 
+    height: 52px; 
+    padding: 0 16px; 
+    border: 1.5px solid #E8E2F4; 
+    border-radius: 16px; 
+    font-size: 16px; 
     font-weight: 600;
+    outline: none; 
+    transition: all 0.2s; 
+    background: #FAFAFA; 
     color: #2D2045;
-    outline: none;
-    padding: 0;
+    appearance: none;
+    -webkit-appearance: none;
   }
-  .search-input::placeholder { color: #D0C4E8; font-weight: 500; }
-  .clear-btn {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: #E8E2F4;
-    border: none;
-    color: #9B8FB8;
-    font-size: 12px;
+  input:focus, select:focus { 
+    border-color: #9B8FFB; 
+    background: #fff; 
+    box-shadow: 0 0 0 4px rgba(155, 143, 251, 0.12), 0 2px 8px rgba(108, 92, 231, 0.08); 
+  }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239B8FB8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
     cursor: pointer;
+  }
+  input[type="number"] { font-size: 18px; text-align: center; letter-spacing: 0.5px; }
+  input[type="text"] { font-size: 15px; text-align: left; }
+  input::placeholder { color: #D0C4E8; }
+  input::-webkit-input-placeholder { color: #D0C4E8; }
+
+  .form-group { margin-bottom: 16px; }
+
+  /* 两列 */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .two-col .form-group { margin-bottom: 0; }
+  .two-col input, .two-col select { height: 48px; }
+
+  /* 汇率：纯文字风格，不用框，表示不可编辑 */
+  .rate-indicator {
     display: flex;
     align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.15s;
-    opacity: 0;
-  }
-  .clear-btn.show { opacity: 1; }
-  .clear-btn:hover { background: #D0C4E8; }
-
-  /* 结果统计 */
-  .result-meta {
-    font-size: 12px;
-    color: #9B8FB8;
-    margin-top: 10px;
+    height: 48px;
     padding: 0 4px;
-    font-weight: 600;
+    background: transparent;
+  }
+  .rate-indicator .rate-text { 
+    font-size: 13px; 
+    font-weight: 600; 
+    color: #8B7FB0; 
+    letter-spacing: -0.2px;
+  }
+  .rate-indicator .rate-text em { 
+    font-style: normal; 
+    color: #6C5CE7; 
+    font-weight: 700; 
   }
 
-  /* 结果列表 */
-  .result-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  /* 退税输入 - 和普通输入框一致，不高亮 */
+  input.tax-input { 
+    color: #2D2045; 
+    background: #FAFAFA; 
+    border-color: #E8E2F4; 
+    font-size: 18px;
+    font-weight: 600;
   }
-  .result-item {
-    background: rgba(255,255,255,0.80);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: 18px;
-    padding: 16px 18px;
-    border: 1px solid rgba(155,143,251,0.10);
-    box-shadow: 0 2px 12px rgba(108,92,231,0.06);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.18s;
-    cursor: pointer;
+  input.tax-input:focus { border-color: #9B8FFB; background: #fff; }
+
+  /* 商品名称 */
+  input.product-name { font-size: 15px; font-weight: 500; }
+
+  /* 折扣按钮 - 小尺寸 */
+  .discount-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .discount-btn { 
+    flex: 0 0 auto; 
+    min-width: 48px;
+    height: 42px; 
+    border: 2px solid #E8E2F4; 
+    border-radius: 14px; 
+    background: #FAFAFA; 
+    font-size: 13px; 
+    font-weight: 600;
+    color: #8B7FB0;
+    cursor: pointer; 
+    text-align: center; 
+    transition: all 0.18s; 
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 10px;
   }
-  .result-item:hover {
-    background: rgba(255,255,255,0.95);
-    border-color: rgba(155,143,251,0.25);
-    box-shadow: 0 4px 16px rgba(108,92,231,0.12);
-    transform: translateY(-1px);
+  .discount-btn:hover { border-color: #C4B0F8; background: #F5F0FF; transform: translateY(-1px); }
+  .discount-btn.active { 
+    border-color: #9B8FFB; 
+    background: linear-gradient(135deg, #F0EDFF, #F5F0FF); 
+    color: #6C5CE7; 
+    font-weight: 700; 
+    box-shadow: 0 2px 8px rgba(155, 143, 251, 0.25);
   }
-  .result-city {
-    font-size: 16px;
-    font-weight: 700;
-    color: #2D2045;
+
+  /* 折扣自定义输入 - 小尺寸 */
+  .discount-custom { margin-top: 8px; }
+  .discount-custom input { 
+    height: 36px; 
+    font-size: 14px; 
+    text-align: center; 
+    background: #F8F5FF;
+    border-color: #DDD5F8;
+    color: #6C5CE7;
+    font-weight: 600;
+  }
+  .discount-custom input:focus { border-color: #9B8FFB; }
+  .discount-custom-suffix { 
+    display: flex; align-items: center; justify-content: center;
+    height: 36px; 
+    color: #B8A8D8; 
+    font-size: 12px; 
+    font-weight: 600;
+    padding: 0 4px;
+  }
+
+  /* 结果卡片 */
+  .result-card { 
+    background: linear-gradient(145deg, #7B6AFF 0%, #A29BFE 50%, #B8AFFA 100%); 
+    border-radius: 28px; 
+    padding: 28px 22px; 
+    color: #fff; 
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(108, 92, 231, 0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+  }
+  .result-card::before {
+    content: '';
+    position: absolute;
+    top: -50px; right: -50px;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .result-card::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -40px;
+    width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .result-main { position: relative; z-index: 1; }
+  .result-main-label { font-size: 12px; color: rgba(255,255,255,0.65); margin-bottom: 6px; letter-spacing: 0.3px; }
+  .result-main-price { font-size: 44px; font-weight: 800; color: #fff; letter-spacing: -1.5px; }
+  .result-main-price small { font-size: 13px; font-weight: 600; opacity: 0.7; margin-left: 2px; }
+
+  .result-divider { height: 1px; background: rgba(255,255,255,0.12); margin: 16px 0; }
+
+  .result-sub { display: flex; justify-content: space-between; position: relative; z-index: 1; }
+  .result-sub-item { text-align: center; flex: 1; }
+  .result-sub-item:not(:last-child) { border-right: 1px solid rgba(255,255,255,0.12); }
+  .result-sub-label { font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 4px; letter-spacing: 0.3px; }
+  .result-sub-value { font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.9); }
+  .result-sub-value.green { color: #B8F5C8; }
+
+  /* 底部说明 */
+  .result-note { 
+    position: relative; z-index: 1; 
+    font-size: 10px; 
+    color: rgba(255,255,255,0.4); 
+    margin-top: 10px; 
+    letter-spacing: 0.3px; 
+  }
+
+  .save-btn { 
+    width: 100%; 
+    height: 56px;
+    background: linear-gradient(135deg, #A29BFE 0%, #6C5CE7 100%); 
+    color: #fff; 
+    border: none; 
+    border-radius: 20px; 
+    font-size: 17px; 
+    font-weight: 700; 
+    cursor: pointer; 
+    margin-top: 16px;
+    transition: all 0.2s;
+    box-shadow: 0 6px 20px rgba(108, 92, 231, 0.32), inset 0 1px 0 rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
     letter-spacing: 0.3px;
   }
-  .result-city .highlight {
-    color: #7B6AFF;
-    font-weight: 800;
-  }
-  .result-id {
-    font-size: 15px;
-    font-weight: 800;
-    color: #6C5CE7;
-    background: linear-gradient(135deg, #F0EDFF, #F8F5FF);
-    padding: 5px 14px;
-    border-radius: 12px;
-    border: 1.5px solid #D8D0FF;
-    letter-spacing: 0.5px;
-    font-family: 'SF Mono', 'Menlo', monospace;
-  }
+  .save-btn:active { transform: scale(0.98); box-shadow: 0 3px 10px rgba(108, 92, 231, 0.22); }
 
-  /* 空状态 */
-  .empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: #C4B8E0;
-    font-size: 14px;
-  }
-  .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+  .api-status { font-size: 11px; color: #C4B8E0; text-align: center; margin-top: 8px; }
 
-  /* 全量列表标题 */
-  .section-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: #9B8FB8;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 10px;
-    padding: 0 4px;
-  }
+  /* 历史记录 */
+  .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .history-header h3 { font-size: 14px; color: #6C5CE7; font-weight: 700; }
+  .history-header span { font-size: 12px; color: #9B8FFB; cursor: pointer; font-weight: 600; }
 
-  /* 全量城市列表 */
-  .all-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    padding: 4px 0;
+  .history-item { 
+    background: #FAFAFA; 
+    border-radius: 16px; 
+    padding: 14px 16px; 
+    margin-bottom: 8px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border: 1px solid #F0EEF8;
+    transition: all 0.18s;
   }
-  .city-tag {
-    background: rgba(255,255,255,0.70);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(155,143,251,0.10);
-    border-radius: 10px;
-    padding: 6px 12px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #6C5CE7;
-    cursor: pointer;
+  .history-item:hover { background: #F8F5FF; border-color: #E8E2F4; box-shadow: 0 2px 10px rgba(108, 92, 231, 0.06); }
+  .history-item:last-child { margin-bottom: 0; }
+  .history-name { font-size: 14px; color: #2D2045; font-weight: 600; }
+  .history-meta { font-size: 11px; color: #B8A8D8; margin-top: 2px; }
+  .history-price { font-size: 17px; color: #6C5CE7; font-weight: 800; }
+
+  .empty-state { text-align: center; padding: 20px; color: #D0C4E8; font-size: 13px; }
+
+  /* 质感增强：卡片hover效果 */
+  .card { transition: box-shadow 0.25s, transform 0.25s; }
+  .card:hover { box-shadow: 0 8px 32px rgba(108, 92, 231, 0.12), 0 2px 8px rgba(108, 92, 231, 0.06); transform: translateY(-1px); }
+
+  /* 历史记录日期分组 */
+  .history-date { font-size: 11px; color: #9B8FB8; font-weight: 600; margin-bottom: 8px; margin-top: 12px; }
+  .history-date:first-child { margin-top: 0; }
+  .history-items { display: flex; flex-direction: column; gap: 6px; }
+  .history-item { 
+    background: #FAFAFA; 
+    border-radius: 12px; 
+    padding: 12px 14px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border: 1px solid #F0EEF8;
     transition: all 0.15s;
+    cursor: pointer;
   }
-  .city-tag:hover {
-    background: #F0EDFF;
-    border-color: #C4B0F8;
-    transform: translateY(-1px);
-  }
-  .city-tag .cid { color: #9B8FB8; font-weight: 700; margin-left: 4px; font-size: 12px; }
+  .history-item:active { background: #F5F0FF; border-color: #E0D8F5; }
+  .history-name { font-size: 14px; color: #2D2045; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px; }
+  .history-price { font-size: 17px; color: #6C5CE7; font-weight: 800; letter-spacing: -0.3px; white-space: nowrap; }
+  .history-index { font-size: 11px; color: #C4B8E8; font-weight: 600; margin-right: 8px; min-width: 20px; }
+  .history-meta { font-size: 12px; color: #9B8FB8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px; }
+  .history-meta .currency { font-size: 11px; }
 
-  /* Toast */
+  /* 详情弹窗 */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 1000;
+    justify-content: center;
+    align-items: flex-end;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-sheet {
+    background: #fff;
+    border-radius: 20px 20px 0 0;
+    padding: 24px 20px 40px;
+    width: 100%;
+    max-width: 480px;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  .modal-handle {
+    width: 36px; height: 4px;
+    background: #E8E2F4;
+    border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+  .modal-title { font-size: 16px; font-weight: 700; color: #2D2045; margin-bottom: 16px; text-align: center; }
+  .modal-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F0EEF8; font-size: 13px; }
+  .modal-row:last-child { border-bottom: none; }
+  .modal-label { color: #9B8FB8; }
+  .modal-value { color: #2D2045; font-weight: 600; }
+  .modal-value.highlight { color: #6C5CE7; font-size: 16px; }
   .toast {
     position: fixed;
     top: 20px;
     left: 50%;
-    transform: translateX(-50%) translateY(-10px);
-    background: linear-gradient(135deg, #7B6AFF, #A29BFE);
+    transform: translateX(-50%);
+    background: #6C5CE7;
     color: #fff;
     padding: 10px 20px;
-    border-radius: 12px;
+    border-radius: 8px;
     font-size: 14px;
-    font-weight: 600;
     z-index: 9999;
     opacity: 0;
-    transition: all 0.25s;
+    transition: opacity 0.3s;
     pointer-events: none;
-    box-shadow: 0 4px 16px rgba(108,92,231,0.3);
   }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  /* copy hint */
-  .copy-hint {
-    font-size: 11px;
-    color: #C4B8E0;
-    text-align: center;
-    margin-top: 12px;
-    font-weight: 500;
-  }
+  .toast.show { opacity: 1; }
 </style>
 </head>
 <body>
 <div class="container">
 
-  <div class="header">
-    <h1>城市ID查询</h1>
-    <div class="subtitle">输入城市名，查找对应的 city_id</div>
-  </div>
-
-  <div class="search-card">
-    <div class="search-wrapper">
-      <span class="search-icon">🔍</span>
-      <input type="text" class="search-input" id="searchInput" placeholder="搜索城市名，如：杭州、广州、北京…" autofocus>
-      <button class="clear-btn" id="clearBtn" onclick="clearSearch()">✕</button>
+  <div class="card">
+    <div class="header">
+      <h1>境外算价</h1>
+      <div class="slogan">先算再买，不花冤枉钱</div>
+      <div class="header-divider"></div>
     </div>
-    <div class="result-meta" id="resultMeta"></div>
+
+    <!-- 第一行：当前币种 / 参考汇率 / 目标币种 -->
+    <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; margin-bottom: 16px; align-items: stretch;">
+      <div class="form-group" style="margin-bottom: 0; text-align: center;">
+        <label class="field-label" style="text-align: center;">当前币种</label>
+        <select id="country" onchange="onCountryChange()" style="height: 44px; font-size: 14px;">
+          <option value="jp">🇯🇵 JPY</option>
+          <option value="kr">🇰🇷 KRW</option>
+          <option value="fr">🇫🇷 EUR</option>
+          <option value="it">🇮🇹 EUR</option>
+          <option value="de">🇩🇪 EUR</option>
+          <option value="uk">🇬🇧 GBP</option>
+          <option value="th">🇹🇭 THB</option>
+          <option value="sg">🇸🇬 SGD</option>
+          <option value="au">🇦🇺 AUD</option>
+          <option value="us">🇺🇸 USD</option>
+        </select>
+      </div>
+      <!-- 参考汇率 -->
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+          <div style="font-size: 15px; color: #A09CB8; font-weight: 600; text-align: center; letter-spacing: 0.3px;" id="rateValue">≈ 0.0467</div>
+          <div onclick="swapCurrencies()" style="width: 34px; height: 34px; background: #F0EEF6; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
+            <span style="font-size: 17px; color: #8B7FB0; font-weight: 600;">⇄</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom: 0; text-align: center;">
+        <label class="field-label" style="text-align: center;">目标币种</label>
+        <select id="homeCurrency" onchange="onCountryChange()" style="height: 44px; font-size: 14px;">
+          <option value="CNY">🇨🇳 CNY</option>
+          <option value="HKD">🇭🇰 HKD</option>
+          <option value="TWD">🇹🇼 TWD</option>
+          <option value="USD">🇺🇸 USD</option>
+          <option value="KRW">🇰🇷 KRW</option>
+          <option value="JPY">🇯🇵 JPY</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 第二行：退税税率 + 免税 -->
+    <div class="form-group">
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <div style="flex: 0 0 calc(100% - 80px);">
+          <label class="field-label">退税税率（%）</label>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <input type="number" id="taxRate" class="tax-input" value="10" step="0.1" min="0" max="100" placeholder="0" oninput="onTaxInput()" style="border-radius: 10px 0 0 10px; border-right: none;">
+            <span style="background: #F5F0FF; border: 1.5px solid #E8E2F4; border-left: none; height: 44px; padding: 0 12px; display: flex; align-items: center; border-radius: 0 10px 10px 0; font-size: 13px; color: #9B8FB8; font-weight: 600;">%</span>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; padding-top: 18px;">
+          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none;">
+            <input type="checkbox" id="taxFree" style="display: none;">
+            <div id="taxFreeBox" onclick="toggleTaxFree()" style="width: 20px; height: 20px; border: 2px solid #DDD5F8; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; background: transparent; flex-shrink: 0;">
+              <span id="taxFreeCheck" style="display: none; font-size: 12px; color: #fff; font-weight: 700;">✓</span>
+            </div>
+            <span id="taxFreeLabel" style="font-size: 13px; font-weight: 600; color: #8B7FB0;">免税</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 商品名称 -->
+    <div class="form-group">
+      <label class="field-label">商品名称（选填）</label>
+      <input type="text" id="productName" class="product-name" placeholder="如：🇯🇵 JPY / SK-II" maxlength="30">
+    </div>
+
+    <!-- 商品价格 -->
+    <div class="form-group">
+      <label class="field-label">商品标价</label>
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <input type="number" id="price" placeholder="输入商品标价" oninput="calculate()" style="flex: 1;">
+        <span id="priceCurrencyTag" style="font-size: 13px; color: #9B8FB8; font-weight: 600; background: #F5F0FF; padding: 4px 10px; border-radius: 8px; border: 1px solid #E8E2F4;">JPY</span>
+      </div>
+    </div>
+
+    <!-- 折扣 -->
+    <div class="form-group">
+      <label class="field-label">折扣</label>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <div class="discount-btns" style="gap: 8px; flex: 1;">
+          <div class="discount-btn active" onclick="setDiscount(0)" id="btn0">无折扣</div>
+          <div class="discount-btn" onclick="setDiscount(10)" id="btn10">9折</div>
+          <div class="discount-btn" onclick="setDiscount(20)" id="btn20">8折</div>
+          <div class="discount-btn" onclick="setDiscount(30)" id="btn30">7折</div>
+          <div class="discount-btn" onclick="setDiscount(50)" id="btn50">5折</div>
+        </div>
+        <div style="display: flex; gap: 4px; align-items: center; flex-shrink: 0;">
+          <input type="number" id="customDiscount" placeholder="其他" min="0" max="100" step="0.1" oninput="onCustomDiscount()" style="width: 70px; height: 38px; font-size: 13px; text-align: center; background: #FAFAFA; border: 1.5px solid #E8E2F4; border-radius: 10px; color: #2D2045; font-weight: 600;">
+          <div style="color: #B8A8D8; font-size: 12px; font-weight: 600;">折</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 结果 -->
+    <div class="result-card">
+      <div class="result-main">
+        <div class="result-main-label">退税后实付（<span id="homeCurrencyLabel">CNY</span>）</div>
+        <div class="result-main-price" id="finalPrice">¥420 <small style="font-size:13px;font-weight:600;color:#9B8FB8;">CNY</small></div>
+      </div>
+      <div class="result-divider"></div>
+      <div class="result-sub">
+        <div class="result-sub-item">
+          <div class="result-sub-label">原价</div>
+          <div class="result-sub-value" id="originalPrice">¥10,000</div>
+        </div>
+        <div class="result-sub-item">
+          <div class="result-sub-label">折扣省</div>
+          <div class="result-sub-value green" id="saveAmount">—</div>
+        </div>
+        <div class="result-sub-item">
+          <div class="result-sub-label">退税返还</div>
+          <div class="result-sub-value green" id="taxRefund">+¥900</div>
+        </div>
+      </div>
+      <div class="result-note" id="resultNote">以上金额均已换算为<span id="noteCurrency">CNY</span></div>
+    </div>
+
+    <button class="save-btn" onclick="saveRecord()">保存</button>
+    <p class="api-status" id="apiStatus">💱 参考汇率，实际以当天汇率</p>
   </div>
 
-  <div id="resultArea"></div>
-  <div class="copy-hint" id="copyHint"></div>
+  <div class="card">
+    <div class="history-header">
+      <h3>📋 计算历史</h3>
+      <span onclick="clearHistory()">清空</span>
+    </div>
+    <div id="historyList">
+      <div class="empty-state">暂无记录~<br>保存后会显示在这里</div>
+    </div>
+  </div>
+
+  <!-- 详情弹窗 -->
+  <div class="modal-overlay" id="detailModal" onclick="closeModal(event)">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="modalTitle">记录详情</div>
+      <div id="modalContent"></div>
+    </div>
+  </div>
 
 </div>
 
-<div class="toast" id="toast"></div>
-
 <script>
-let cityData = {};
-let allCities = [];
+const EXCHANGE_RATES = {
+  // EXCHANGE_RATES[homeCurrency][country] = 1元目标货币兑换多少外国货币（从open.er-api.com实时拉取）
+  CNY: { jp: 23.11, kr: 218.44, fr: 0.125, it: 0.125, de: 0.125, uk: 0.109, th: 4.74, sg: 0.186, au: 0.210, us: 0.144 },
+  HKD: { jp: 0.596, kr: 0.0683, fr: 9.95, it: 9.95, de: 9.95, uk: 11.60, th: 0.268, sg: 0.686, au: 0.601, us: 0.924 },
+  TWD: { jp: 2.30, kr: 0.26, fr: 38.2, it: 38.2, de: 38.2, uk: 44.6, th: 1.03, sg: 2.64, au: 2.31, us: 3.55 },
+  USD: { jp: 0.0648, kr: 0.00738, fr: 1.078, it: 1.078, de: 1.078, uk: 1.259, th: 0.0290, sg: 0.0745, au: 0.0651, us: 1.00 },
+  KRW: { jp: 8.78, kr: 1.00, fr: 145.8, it: 145.8, de: 145.8, uk: 170.2, th: 3.92, sg: 10.06, au: 8.80, us: 13.52 },
+  JPY: { jp: 1.00, kr: 0.114, fr: 13.17, it: 13.17, de: 13.17, uk: 15.38, th: 0.355, sg: 0.909, au: 0.795, us: 1.222 },
+};
 
-// Load city data
-async function loadData() {
-  try {
-    const res = await fetch('city-id-map.json');
-    cityData = await res.json();
-    allCities = Object.entries(cityData).map(([name, id]) => ({ name, id }));
-    renderAllCities();
-  } catch (e) {
-    document.getElementById('resultArea').innerHTML = '<div class="empty-state"><div class="icon">⚠️</div>数据加载失败，请刷新重试</div>';
-  }
+const COUNTRY_NAMES = { jp: '日本', kr: '韩国', fr: '法国', it: '意大利', de: '德国', uk: '英国', th: '泰国', sg: '新加坡', au: '澳大利亚', us: '美国' };
+const COUNTRY_CURRENCY = { jp: 'JPY', kr: 'KRW', fr: 'EUR', it: 'EUR', de: 'EUR', uk: 'GBP', th: 'THB', sg: 'SGD', au: 'AUD', us: 'USD' };
+const COUNTRY_FLAG = { jp: '🇯🇵', kr: '🇰🇷', fr: '🇫🇷', it: '🇮🇹', de: '🇩🇪', uk: '🇬🇧', th: '🇹🇭', sg: '🇸🇬', au: '🇦🇺', us: '🇺🇸' };
+const getCountryFlag = (code) => COUNTRY_FLAG[code] || '';
+const CURRENCY_SYMBOL = { CNY: '¥', HKD: 'HK$', TWD: 'NT$', USD: '$', KRW: '₩', JPY: '¥' };
+const CURRENCY_DECIMALS = { CNY: 2, HKD: 2, TWD: 0, USD: 2, KRW: 0, JPY: 0 };
+const DEFAULT_TAX = { jp: 10, kr: 10, fr: 12, it: 22, de: 19, uk: 20, th: 7, sg: 9, au: 10, us: 0 };
+
+let currentDiscount = 0;
+
+function onCountryChange() {
+  const country = document.getElementById('country').value;
+  document.getElementById('taxRate').value = DEFAULT_TAX[country] || 10;
+  updateRateDisplay();
+  calculate();
 }
 
-// Fuzzy search using simple substring + pinyin prefix matching
-function fuzzyMatch(query, cityName) {
-  query = query.toLowerCase();
-  const pinyinMap = {
-    '北':'b','上':'s','广':'g','深':'sh','杭':'h','成':'c','重':'zh','天':'t',
-    '南':'n','武':'w','西':'x','福':'f','长':'ch','济':'j','青':'q','哈':'ha',
-    '南':'n','郑':'zh','合':'he','长':'ch','沈':'sh','石':'sh','长':'ch',
-    '大':'d','南':'n','东':'d','无':'w','苏':'s','宁':'n','厦':'x',
-    '佛':'f','合':'he','济':'j','东':'d','佛':'f','佛':'f','佛':'f'
-  };
-  // Direct substring match
-  if (cityName.includes(query)) return true;
-  // First char pinyin match
-  const firstChar = cityName[0];
-  const firstPinyin = pinyinMap[firstChar] || '';
-  if (firstPinyin && firstPinyin.startsWith(query)) return true;
-  return false;
+function updateRateDisplay() {
+  const country = document.getElementById('country').value;
+  const homeCurrency = document.getElementById('homeCurrency').value;
+  const ratePer100 = EXCHANGE_RATES[homeCurrency]?.[country] || 1;
+  const cnyPerForeign = (1 / ratePer100).toFixed(4);
+  document.getElementById('rateValue').textContent = '≈ ' + cnyPerForeign;
 }
 
-function highlight(text, query) {
-  if (!query) return text;
-  const idx = text.indexOf(query);
-  if (idx === -1) return text;
-  return text.slice(0, idx) + '<span class="highlight">' + text.slice(idx, idx+query.length) + '</span>' + text.slice(idx+query.length);
-}
-
-function search() {
-  const query = document.getElementById('searchInput').value.trim();
-  const clearBtn = document.getElementById('clearBtn');
-  const resultMeta = document.getElementById('resultMeta');
-  const resultArea = document.getElementById('resultArea');
-  const copyHint = document.getElementById('copyHint');
-  const allListSection = document.getElementById('allListSection');
-
-  clearBtn.classList.toggle('show', query.length > 0);
-
-  if (!query) {
-    resultMeta.textContent = '';
-    resultArea.innerHTML = '';
-    copyHint.textContent = '';
-    if (allListSection) allListSection.style.display = '';
-    return;
-  }
-
-  if (allListSection) allListSection.style.display = 'none';
-
-  const results = allCities.filter(([name]) => fuzzyMatch(query, name)).slice(0, 20);
-  const total = results.length;
-
-  resultMeta.textContent = total > 0 ? `找到 ${total} 个匹配结果` : '';
-
-  if (results.length === 0) {
-    resultArea.innerHTML = '<div class="empty-state"><div class="icon">🔍</div>没有找到匹配的城市<br><span style="font-size:12px;color:#C4B8E0;margin-top:8px;display:block;">试试其他关键词，如：杭、北、上、广</span></div>';
-    copyHint.textContent = '';
-    return;
-  }
-
-  let html = '<div class="result-list">';
-  results.forEach(([name, id]) => {
-    html += `<div class="result-item" onclick="copyId('${id}','${name}')">
-      <span class="result-city">${highlight(name, query)}</span>
-      <span class="result-id">${id}</span>
-    </div>`;
-  });
-  html += '</div>';
-  resultArea.innerHTML = html;
-  copyHint.textContent = '👆 点击任意结果可复制 city_id';
-}
-
-function clearSearch() {
-  document.getElementById('searchInput').value = '';
-  search();
-  document.getElementById('searchInput').focus();
-}
-
-function copyId(id, name) {
-  navigator.clipboard.writeText(id).then(() => {
-    showToast(`${name} → ${id} 已复制`);
-  }).catch(() => {
-    // Fallback
-    const ta = document.createElement('textarea');
-    ta.value = id;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    showToast(`${name} → ${id} 已复制`);
-  });
+function swapCurrencies() {
+  const countrySelect = document.getElementById('country');
+  const homeSelect = document.getElementById('homeCurrency');
+  const tmp = countrySelect.value;
+  countrySelect.value = homeSelect.value;
+  homeSelect.value = tmp;
+  onCountryChange();
+  showToast('✓ 币种互换成功');
 }
 
 function showToast(msg) {
-  const toast = document.getElementById('toast');
+  let toast = document.querySelector('.toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.className = 'toast';
+    document.body.appendChild(toast);
+  }
   toast.textContent = msg;
   toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 1800);
+  setTimeout(() => toast.classList.remove('show'), 1500);
 }
 
-function renderAllCities() {
-  const resultArea = document.getElementById('resultArea');
-  const total = allCities.length;
-  let html = `<div id="allListSection"><div class="section-title">全部 ${total} 个城市</div><div class="all-list">`;
-  allCities.forEach(({ name, id }) => {
-    html += `<div class="city-tag" onclick="copyId('${id}','${name}')">${name}<span class="cid">${id}</span></div>`;
+function onTaxInput() {
+  const val = parseFloat(document.getElementById('taxRate').value) || 0;
+  if (val > 100) document.getElementById('taxRate').value = 100;
+  if (val < 0) document.getElementById('taxRate').value = 0;
+  // 如果手动输入税率，取消免税勾选
+  document.getElementById('taxFree').checked = false;
+  updateTaxFreeUI(false);
+  calculate();
+}
+
+function toggleTaxFree() {
+  const checked = !document.getElementById('taxFree').checked;
+  document.getElementById('taxFree').checked = checked;
+  updateTaxFreeUI(checked);
+  onTaxFreeChange();
+}
+
+function updateTaxFreeUI(checked) {
+  const box = document.getElementById('taxFreeBox');
+  const check = document.getElementById('taxFreeCheck');
+  const label = document.getElementById('taxFreeLabel');
+  if (checked) {
+    box.style.background = '#9B8FFB';
+    box.style.borderColor = '#9B8FFB';
+    check.style.display = 'block';
+    label.style.color = '#6C5CE7';
+  } else {
+    box.style.background = 'transparent';
+    box.style.borderColor = '#DDD5F8';
+    check.style.display = 'none';
+    label.style.color = '#8B7FB0';
+  }
+}
+
+function onTaxFreeChange() {
+  const taxFree = document.getElementById('taxFree').checked;
+  const taxInput = document.getElementById('taxRate');
+  if (taxFree) {
+    taxInput.value = 0;
+    taxInput.disabled = true;
+  } else {
+    taxInput.disabled = false;
+    taxInput.value = DEFAULT_TAX[document.getElementById('country').value] || 10;
+  }
+  calculate();
+}
+
+function onCustomDiscount() {
+  const input = document.getElementById('customDiscount');
+  let val = parseFloat(input.value) || 0;
+  if (val > 100) { val = 100; input.value = 100; }
+  if (val < 0) { val = 0; input.value = 0; }
+  document.querySelectorAll('.discount-btn').forEach(btn => btn.classList.remove('active'));
+  currentDiscount = 100 - val;
+  calculate();
+}
+
+function setDiscount(val) {
+  currentDiscount = val;
+  document.getElementById('customDiscount').value = '';
+  [0, 10, 20, 30, 50].forEach(v => {
+    const el = document.getElementById('btn' + v);
+    if (el) el.classList.toggle('active', v === val);
   });
-  html += '</div></div>';
-  resultArea.innerHTML = html;
+  calculate();
 }
 
-document.getElementById('searchInput').addEventListener('input', search);
-loadData();
+function calculate() {
+  const price = parseFloat(document.getElementById('price').value) || 0;
+  const homeCurrency = document.getElementById('homeCurrency').value;
+  const country = document.getElementById('country').value;
+  const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+  
+  const ratePer100 = EXCHANGE_RATES[homeCurrency]?.[country] || 1;
+  
+  const priceVal = price > 0 ? price : 0;
+  const discountedPrice = priceVal * (1 - currentDiscount / 100);
+  const afterTaxPrice = discountedPrice * (1 - taxRate / 100);
+  // foreign → CNY: foreign ÷ (1 CNY in foreign) = foreign ÷ ratePer100
+  const finalHome = afterTaxPrice / ratePer100;
+  const originalHome = priceVal / ratePer100;
+  const saveHome = (priceVal - discountedPrice) / ratePer100;
+  const taxRefundHome = (discountedPrice - afterTaxPrice) / ratePer100;
+  
+  const homeSymbol = CURRENCY_SYMBOL[homeCurrency];
+  const decimals = CURRENCY_DECIMALS[homeCurrency] ?? 2;
+  const fmt = (n) => n.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+  
+  document.getElementById('homeCurrencyLabel').textContent = homeCurrency;
+  document.getElementById('priceCurrencyTag').textContent = COUNTRY_CURRENCY[country];
+  document.getElementById('noteCurrency').textContent = homeCurrency;
+  document.getElementById('originalPrice').textContent = priceVal > 0 ? `${homeSymbol}${fmt(originalHome)}` : '—';
+  document.getElementById('saveAmount').textContent = currentDiscount > 0 && priceVal > 0 ? `-${homeSymbol}${fmt(saveHome)}` : '—';
+  document.getElementById('taxRefund').textContent = taxRate > 0 && priceVal > 0 ? `+${homeSymbol}${fmt(taxRefundHome)}` : '—';
+  document.getElementById('finalPrice').innerHTML = priceVal > 0 ? `${homeSymbol}${fmt(finalHome)}<small>${homeCurrency}</small>` : `—`;
+}
+
+function saveRecord() {
+  const price = parseFloat(document.getElementById('price').value) || 0;
+  const countryCode = document.getElementById('country').value;
+  const country = COUNTRY_NAMES[countryCode];
+  const homeCurrency = document.getElementById('homeCurrency').value;
+  const foreignCurrency = COUNTRY_CURRENCY[countryCode];
+  const productName = document.getElementById('productName').value.trim() || getCountryFlag(countryCode) + ' ' + foreignCurrency;
+  const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+  const discount = currentDiscount;
+  const taxFree = document.getElementById('taxFree').checked;
+  const final = document.getElementById('finalPrice').textContent;
+  const homeSymbol = CURRENCY_SYMBOL[homeCurrency];
+  const foreignSymbol = CURRENCY_SYMBOL[foreignCurrency] || '';
+  const ratePer100 = EXCHANGE_RATES[homeCurrency]?.[countryCode] || 1;
+  const now = new Date();
+  const dateKey = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+
+  const item = { productName, country, countryCode, price, final, taxRate, discount, taxFree, homeCurrency, homeSymbol, foreignCurrency, foreignSymbol, ratePerUnit, dateKey, savedAt: now.toISOString() };
+  let history = JSON.parse(localStorage.getItem('calcHistory6') || '[]');
+  history.unshift(item);
+  if (history.length > 50) history = history.slice(0, 50);
+  localStorage.setItem('calcHistory6', JSON.stringify(history));
+  renderHistory();
+  document.getElementById('productName').value = '';
+  document.getElementById('price').value = '';
+  calculate();
+}
+
+function renderHistory() {
+  const history = JSON.parse(localStorage.getItem('calcHistory6') || '[]');
+  const el = document.getElementById('historyList');
+  if (history.length === 0) {
+    el.innerHTML = '<div class="empty-state">暂无记录~<br>保存后会显示在这里</div>';
+    return;
+  }
+  // 按日期分组
+  const groups = {};
+  history.forEach((item, idx) => {
+    if (!groups[item.dateKey]) groups[item.dateKey] = [];
+    groups[item.dateKey].push({ ...item, _idx: groups[item.dateKey].length + 1, _globalIdx: idx });
+  });
+  let html = '';
+  Object.keys(groups).forEach(date => {
+    const items = groups[date];
+    html += `<div class="history-date">${date}</div>`;
+    html += `<div class="history-items">`;
+    items.forEach(item => {
+      html += `<div class="history-item" onclick="openModal(${item._globalIdx})">
+        <div style="display:flex;align-items:center;">
+          <span class="history-index">${item._idx}</span>
+          <div>
+            <div class="history-name">${item.productName}</div>
+            <div class="history-meta">${item.price.toLocaleString()} ${item.foreignCurrency} → ${item.final.replace(/[^0-9.]/g,'')} ${item.homeCurrency}</div>
+          </div>
+        </div>
+        <div class="history-price">${item.final.replace(/[^0-9.]/g,'')}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  el.innerHTML = html;
+}
+
+function openModal(idx) {
+  const history = JSON.parse(localStorage.getItem('calcHistory6') || '[]');
+  const item = history[idx];
+  if (!item) return;
+  const fmt = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const discountLabel = item.discount === 0 ? '无折扣' : `${100-item.discount}折`;
+  document.getElementById('modalTitle').textContent = item.productName;
+  const savedDate = new Date(item.savedAt);
+  const dateStr = `${savedDate.getFullYear()}-${String(savedDate.getMonth()+1).padStart(2,'0')}-${String(savedDate.getDate()).padStart(2,'0')}`;
+  const timeStr = `${String(savedDate.getHours()).padStart(2,'0')}:${String(savedDate.getMinutes()).padStart(2,'0')}`;
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-row"><span class="modal-label">保存时间</span><span class="modal-value">${dateStr} ${timeStr}</span></div>
+    <div class="modal-row"><span class="modal-label">目的国家</span><span class="modal-value">${item.country}</span></div>
+    <div class="modal-row"><span class="modal-label">当前币种</span><span class="modal-value">${item.foreignSymbol} ${item.foreignCurrency}</span></div>
+    <div class="modal-row"><span class="modal-label">目标币种</span><span class="modal-value">${item.homeSymbol} ${item.homeCurrency}</span></div>
+    <div class="modal-row"><span class="modal-label">商品标价</span><span class="modal-value">${item.foreignSymbol}${item.price.toLocaleString()} ${item.foreignCurrency}</span></div>
+    <div class="modal-row"><span class="modal-label">参考汇率</span><span class="modal-value">1 ${item.homeCurrency} = ${item.ratePerUnit} ${item.foreignCurrency}</span></div>
+    <div class="modal-row"><span class="modal-label">折扣</span><span class="modal-value">${discountLabel}</span></div>
+    <div class="modal-row"><span class="modal-label">免税</span><span class="modal-value">${item.taxFree ? '是' : '否'}</span></div>
+    <div class="modal-row"><span class="modal-label">退税率</span><span class="modal-value">${item.taxRate}%</span></div>
+    <div class="modal-row" style="margin-top:8px;padding-top:12px;border-top:2px solid #E8E2F4;">
+      <span class="modal-label">退税后实付</span>
+      <span class="modal-value highlight" style="font-size:22px;font-weight:800;">¥${item.final.replace(/[^0-9.]/g,'')} <span style="font-size:13px;font-weight:600;color:#9B8FB8;">${item.homeCurrency}</span></span>
+    </div>
+  `;
+  document.getElementById('detailModal').classList.add('show');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('detailModal')) {
+    document.getElementById('detailModal').classList.remove('show');
+  }
+}
+
+function clearHistory() {
+  localStorage.removeItem('calcHistory6');
+  renderHistory();
+}
+
+onCountryChange();
+renderHistory();
 </script>
 </body>
 </html>
