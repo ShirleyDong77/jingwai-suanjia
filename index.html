@@ -1,4 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>城市ID查询</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+    background: linear-gradient(160deg, #f8f4ff 0%, #fff5f8 50%, #f0f4ff 100%);
+    min-height: 100vh;
+    padding: 20px 16px 40px;
+  }
+  .container { max-width: 480px; margin: 0 auto; }
 
-"; if (isNaN(price) || price <= 0) { document.getElementById('resultPrice').textContent = '—'; document.getElementById('resultCurrency').textContent = '—'; document.getElementById('saveBtn').disabled = true; return; } const taxFree = document.getElementById('taxFreeCheck').checked; const taxRate = taxFree ? 0 : (parseFloat(document.getElementById('taxRate').value) || 0) / 100; const discountPrice = price * currentDiscount; const finalPrice = discountPrice * (1 - taxRate / 100); const currency = document.getElementById('currencySelect').value; const symbol = currencySymbols[currency] || currency; document.getElementById('resultPrice').textContent = symbol + ' ' + finalPrice.toFixed(2); document.getElementById('resultCurrency').textContent = currency; document.getElementById('saveBtn').disabled = false; isCalculating = false; } // ==================== SAVE ==================== // function validateAndGetPrice() { const price = parseFloat(document.getElementById('priceInput').value); if (isNaN(price) || price <= 0) { if (price === 0) { showToast('商品价格不能为零', 'error'); } else { showToast('请输入商品价格', 'error'); } return null; } if (price * currentDiscount < 1) { showToast('折后价格需 ≥ 1', 'error'); return null; } return price; } function saveRecord() { const price = validateAndGetPrice(); if (price === null) return; const finalPrice = price * currentDiscount * (1 - (document.getElementById('taxFreeCheck').checked ? 0 : parseFloat(document.getElementById('taxRate').value || 0) / 100)); const currency = document.getElementById('currencySelect').value; const symbol = currencySymbols[currency] || currency; const country = document.getElementById('countrySelect').value; const taxFree = document.getElementById('taxFreeCheck').checked; const taxRate = taxFree ? 0 : parseFloat(document.getElementById('taxRate').value || 0); const now = new Date(); const dateKey = now.toISOString().slice(0,10); const record = { id: Date.now(), dateKey, homeCountry, targetCountry: country, currency, price, discount: currentDiscount, taxRate, taxFree, finalPrice: parseFloat(finalPrice.toFixed(2)), savedAt: now.toLocaleString('zh-CN', {year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}), countryName: countryNames[country], symbol }; const history = JSON.parse(localStorage.getItem('calcHistory7') || '[]'); history.unshift(record); localStorage.setItem('calcHistory7', JSON.stringify(history)); renderHistory(); showToast('已保存', 'success'); document.getElementById('priceInput').value = ''; document.getElementById('priceInput').focus(); calculate(); } // ==================== HISTORY ==================== // function renderHistory() { const history = JSON.parse(localStorage.getItem('calcHistory7') || '[]'); const list = document.getElementById('historyList'); if (history.length === 0) { list.innerHTML = '<div class="history-empty"><div class="history-empty-icon">📝</div><div class="history-empty-text">还没有记录，开始计算吧</div></div>'; return; } const flags = { cn:'🇨🇳', jp:'🇯🇵', kr:'🇰🇷', us:'🇺🇸', uk:'🇬🇧', fr:'🇫🇷', de:'🇩🇪', it:'🇮🇹', au:'🇦🇺', ca:'🇨🇦' }; const groups = {}; history.forEach(r => { if (!groups[r.dateKey]) groups[r.dateKey] = []; groups[r.dateKey].push(r); }); const dateLabels = { }; const today = new Date().toISOString().slice(0,10); const yesterday = new Date(Date.now()-86400000).toISOString().slice(0,10); let html = ''; Object.entries(groups).forEach(([date, records]) => { let label = date; if (date === today) label = '今天'; else if (date === yesterday) label = '昨天'; const items = records.map(r => { const sym = currencySymbols[r.currency] || r.currency; const badges = []; if (r.taxFree) badges.push('<span class="history-badge badge-tax">免税</span>'); if (r.discount < 1) badges.push('<span class="history-badge badge-discount">' + (r.discount*10).toFixed(1) + '折</span>'); const detailParts = []; if (r.discount < 1) detailParts.push((r.discount*10).toFixed(1) + '折'); if (r.taxFree) detailParts.push('免税'); else if (r.taxRate > 0) detailParts.push('退' + r.taxRate + '%'); const detailStr = detailParts.length ? detailParts.join(' · ') : '无折扣不退税'; return '<div class="history-item" onclick="showModal(' + r.id + ')"><div class="history-item-left"><span class="history-flag">' + (flags[r.targetCountry] || '🌍') + '</span><div class="history-info"><div class="history-country">' + r.countryName + ' → ' + r.currency + '</div><div class="history-detail">' + sym + ' ' + r.price.toFixed(2) + ' · ' + detailStr + '</div></div></div><div><span class="history-price">' + sym + ' ' + r.finalPrice + '</span>' + badges.join('') + '</div></div>'; }).join(''); html += '<div class="date-group"><div class="date-label">' + label + '</div>' + items + '</div>'; }); list.innerHTML = html; } // ==================== MODAL ==================== // function showModal(id) { const history = JSON.parse(localStorage.getItem('calcHistory7') || '[]'); const r = history.find(x => x.id === id); if (!r) return; const sym = currencySymbols[r.currency] || r.currency; const flags = { cn:'🇨🇳', jp:'🇯🇵', kr:'🇰🇷', us:'🇺🇸', uk:'🇬🇧', fr:'🇫🇷', de:'🇩🇪', it:'🇮🇹', au:'🇦🇺', ca:'🇨🇦' }; const discountStr = r.discount < 1 ? (r.discount * 10).toFixed(1) + '折' : '无折扣'; const taxStr = r.taxFree ? '免税' : (r.taxRate > 0 ? '退 ' + r.taxRate + '%' : '不退'); document.getElementById('modalTitle').textContent = flags[r.targetCountry] + ' ' + r.countryName; document.getElementById('modalContent').innerHTML = '<div class="modal-row"><span class="modal-key">支付币种</span><span class="modal-val">' + r.currency + ' (' + sym + ')</span></div><div class="modal-row"><span class="modal-key">标价金额</span><span class="modal-val">' + sym + ' ' + r.price.toFixed(2) + '</span></div><div class="modal-row"><span class="modal-key">折扣</span><span class="modal-val">' + discountStr + '</span></div><div class="modal-row"><span class="modal-key">退税</span><span class="modal-val">' + taxStr + '</span></div><div class="modal-row"><span class="modal-key">实付金额</span><span class="modal-val highlight">' + sym + ' ' + r.finalPrice + '</span></div><div class="modal-row"><span class="modal-key">保存时间</span><span class="modal-val">' + r.savedAt + '</span></div>'; document.getElementById('modalOverlay').classList.add('show'); document.body.style.overflow = 'hidden'; } function closeModal(e) { if (e && e.target !== e.currentTarget) return; document.getElementById('modalOverlay').classList.remove('show'); document.body.style.overflow = ''; } // ==================== TOAST ==================== // function showToast(msg, type='info') { const t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast ' + type + ' show'; setTimeout(() => t.classList.remove('show'), 2000); } // ==================== INPUT RESTRICTIONS ==================== // document.getElementById('priceInput').addEventListener('input', function() { if (this.value < 0) this.value = ''; }); document.getElementById('taxRate').addEventListener('input', function() { if (this.value < 0) this.value = ''; }); document.getElementById('customDiscount').addEventListener('input', function() { if (this.value < 0) this.value = ''; }); // ==================== START ==================== init(); </script>
+  /* 头部 */
+  .header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #7B6AFF, #A29BFE);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+  .header .subtitle {
+    font-size: 13px;
+    color: #9B8FB8;
+    font-weight: 500;
+  }
+
+  /* 搜索框 */
+  .search-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 28px;
+    padding: 20px 20px;
+    box-shadow: 0 4px 24px rgba(108,92,231,0.10), 0 1px 3px rgba(108,92,231,0.06);
+    border: 1px solid rgba(155,143,251,0.15);
+    margin-bottom: 20px;
+  }
+  .search-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #FAFAFA;
+    border: 1.5px solid #E8E2F4;
+    border-radius: 16px;
+    padding: 0 16px;
+    transition: all 0.2s;
+  }
+  .search-wrapper:focus-within {
+    border-color: #9B8FFB;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(155,143,251,0.12);
+  }
+  .search-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    opacity: 0.6;
+  }
+  .search-input {
+    flex: 1;
+    height: 52px;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    font-weight: 600;
+    color: #2D2045;
+    outline: none;
+    padding: 0;
+  }
+  .search-input::placeholder { color: #D0C4E8; font-weight: 500; }
+  .clear-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #E8E2F4;
+    border: none;
+    color: #9B8FB8;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+    opacity: 0;
+  }
+  .clear-btn.show { opacity: 1; }
+  .clear-btn:hover { background: #D0C4E8; }
+
+  /* 结果统计 */
+  .result-meta {
+    font-size: 12px;
+    color: #9B8FB8;
+    margin-top: 10px;
+    padding: 0 4px;
+    font-weight: 600;
+  }
+
+  /* 结果列表 */
+  .result-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .result-item {
+    background: rgba(255,255,255,0.80);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 18px;
+    padding: 16px 18px;
+    border: 1px solid rgba(155,143,251,0.10);
+    box-shadow: 0 2px 12px rgba(108,92,231,0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.18s;
+    cursor: pointer;
+  }
+  .result-item:hover {
+    background: rgba(255,255,255,0.95);
+    border-color: rgba(155,143,251,0.25);
+    box-shadow: 0 4px 16px rgba(108,92,231,0.12);
+    transform: translateY(-1px);
+  }
+  .result-city {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2D2045;
+    letter-spacing: 0.3px;
+  }
+  .result-city .highlight {
+    color: #7B6AFF;
+    font-weight: 800;
+  }
+  .result-id {
+    font-size: 15px;
+    font-weight: 800;
+    color: #6C5CE7;
+    background: linear-gradient(135deg, #F0EDFF, #F8F5FF);
+    padding: 5px 14px;
+    border-radius: 12px;
+    border: 1.5px solid #D8D0FF;
+    letter-spacing: 0.5px;
+    font-family: 'SF Mono', 'Menlo', monospace;
+  }
+
+  /* 空状态 */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #C4B8E0;
+    font-size: 14px;
+  }
+  .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+
+  /* 全量列表标题 */
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #9B8FB8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    padding: 0 4px;
+  }
+
+  /* 全量城市列表 */
+  .all-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 4px 0;
+  }
+  .city-tag {
+    background: rgba(255,255,255,0.70);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(155,143,251,0.10);
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6C5CE7;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .city-tag:hover {
+    background: #F0EDFF;
+    border-color: #C4B0F8;
+    transform: translateY(-1px);
+  }
+  .city-tag .cid { color: #9B8FB8; font-weight: 700; margin-left: 4px; font-size: 12px; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: linear-gradient(135deg, #7B6AFF, #A29BFE);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 9999;
+    opacity: 0;
+    transition: all 0.25s;
+    pointer-events: none;
+    box-shadow: 0 4px 16px rgba(108,92,231,0.3);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* copy hint */
+  .copy-hint {
+    font-size: 11px;
+    color: #C4B8E0;
+    text-align: center;
+    margin-top: 12px;
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>城市ID查询</h1>
+    <div class="subtitle">输入城市名，查找对应的 city_id</div>
+  </div>
+
+  <div class="search-card">
+    <div class="search-wrapper">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" id="searchInput" placeholder="搜索城市名，如：杭州、广州、北京…" autofocus>
+      <button class="clear-btn" id="clearBtn" onclick="clearSearch()">✕</button>
+    </div>
+    <div class="result-meta" id="resultMeta"></div>
+  </div>
+
+  <div id="resultArea"></div>
+  <div class="copy-hint" id="copyHint"></div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let cityData = {};
+let allCities = [];
+
+// Load city data
+async function loadData() {
+  try {
+    const res = await fetch('city-id-map.json');
+    cityData = await res.json();
+    allCities = Object.entries(cityData).map(([name, id]) => ({ name, id }));
+    renderAllCities();
+  } catch (e) {
+    document.getElementById('resultArea').innerHTML = '<div class="empty-state"><div class="icon">⚠️</div>数据加载失败，请刷新重试</div>';
+  }
+}
+
+// Fuzzy search using simple substring + pinyin prefix matching
+function fuzzyMatch(query, cityName) {
+  query = query.toLowerCase();
+  const pinyinMap = {
+    '北':'b','上':'s','广':'g','深':'sh','杭':'h','成':'c','重':'zh','天':'t',
+    '南':'n','武':'w','西':'x','福':'f','长':'ch','济':'j','青':'q','哈':'ha',
+    '南':'n','郑':'zh','合':'he','长':'ch','沈':'sh','石':'sh','长':'ch',
+    '大':'d','南':'n','东':'d','无':'w','苏':'s','宁':'n','厦':'x',
+    '佛':'f','合':'he','济':'j','东':'d','佛':'f','佛':'f','佛':'f'
+  };
+  // Direct substring match
+  if (cityName.includes(query)) return true;
+  // First char pinyin match
+  const firstChar = cityName[0];
+  const firstPinyin = pinyinMap[firstChar] || '';
+  if (firstPinyin && firstPinyin.startsWith(query)) return true;
+  return false;
+}
+
+function highlight(text, query) {
+  if (!query) return text;
+  const idx = text.indexOf(query);
+  if (idx === -1) return text;
+  return text.slice(0, idx) + '<span class="highlight">' + text.slice(idx, idx+query.length) + '</span>' + text.slice(idx+query.length);
+}
+
+function search() {
+  const query = document.getElementById('searchInput').value.trim();
+  const clearBtn = document.getElementById('clearBtn');
+  const resultMeta = document.getElementById('resultMeta');
+  const resultArea = document.getElementById('resultArea');
+  const copyHint = document.getElementById('copyHint');
+  const allListSection = document.getElementById('allListSection');
+
+  clearBtn.classList.toggle('show', query.length > 0);
+
+  if (!query) {
+    resultMeta.textContent = '';
+    resultArea.innerHTML = '';
+    copyHint.textContent = '';
+    if (allListSection) allListSection.style.display = '';
+    return;
+  }
+
+  if (allListSection) allListSection.style.display = 'none';
+
+  const results = allCities.filter(([name]) => fuzzyMatch(query, name)).slice(0, 20);
+  const total = results.length;
+
+  resultMeta.textContent = total > 0 ? `找到 ${total} 个匹配结果` : '';
+
+  if (results.length === 0) {
+    resultArea.innerHTML = '<div class="empty-state"><div class="icon">🔍</div>没有找到匹配的城市<br><span style="font-size:12px;color:#C4B8E0;margin-top:8px;display:block;">试试其他关键词，如：杭、北、上、广</span></div>';
+    copyHint.textContent = '';
+    return;
+  }
+
+  let html = '<div class="result-list">';
+  results.forEach(([name, id]) => {
+    html += `<div class="result-item" onclick="copyId('${id}','${name}')">
+      <span class="result-city">${highlight(name, query)}</span>
+      <span class="result-id">${id}</span>
+    </div>`;
+  });
+  html += '</div>';
+  resultArea.innerHTML = html;
+  copyHint.textContent = '👆 点击任意结果可复制 city_id';
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  search();
+  document.getElementById('searchInput').focus();
+}
+
+function copyId(id, name) {
+  navigator.clipboard.writeText(id).then(() => {
+    showToast(`${name} → ${id} 已复制`);
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = id;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast(`${name} → ${id} 已复制`);
+  });
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1800);
+}
+
+function renderAllCities() {
+  const resultArea = document.getElementById('resultArea');
+  const total = allCities.length;
+  let html = `<div id="allListSection"><div class="section-title">全部 ${total} 个城市</div><div class="all-list">`;
+  allCities.forEach(({ name, id }) => {
+    html += `<div class="city-tag" onclick="copyId('${id}','${name}')">${name}<span class="cid">${id}</span></div>`;
+  });
+  html += '</div></div>';
+  resultArea.innerHTML = html;
+}
+
+document.getElementById('searchInput').addEventListener('input', search);
+loadData();
+</script>
 </body>
 </html>
